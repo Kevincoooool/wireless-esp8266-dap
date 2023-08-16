@@ -30,6 +30,8 @@
     #define DAP_SPI SPI2
 #elif defined CONFIG_IDF_TARGET_ESP32C3
     #define DAP_SPI GPSPI2
+#elif defined CONFIG_IDF_TARGET_ESP32S3
+    #define DAP_SPI GPSPI2
 #else
     #error unknown hardware
 #endif
@@ -54,6 +56,16 @@
         } while(0)
 
 #elif defined CONFIG_IDF_TARGET_ESP32C3
+    #define SET_MOSI_BIT_LEN(x) DAP_SPI.ms_dlen.ms_data_bitlen = x
+    #define SET_MISO_BIT_LEN(x) DAP_SPI.ms_dlen.ms_data_bitlen = x
+    #define START_AND_WAIT_SPI_TRANSMISSION_DONE() \
+        do {                                       \
+            DAP_SPI.cmd.update = 1;                \
+            while (DAP_SPI.cmd.update) continue;   \
+            DAP_SPI.cmd.usr = 1;                   \
+            while (DAP_SPI.cmd.usr) continue;      \
+        } while(0)
+#elif defined CONFIG_IDF_TARGET_ESP32S3
     #define SET_MOSI_BIT_LEN(x) DAP_SPI.ms_dlen.ms_data_bitlen = x
     #define SET_MISO_BIT_LEN(x) DAP_SPI.ms_dlen.ms_data_bitlen = x
     #define START_AND_WAIT_SPI_TRANSMISSION_DONE() \
@@ -241,6 +253,39 @@ __FORCEINLINE void DAP_SPI_Send_Header(const uint8_t packetHeaderData, uint8_t *
     dataBuf = DAP_SPI.data_buf[0];
     *ack = dataBuf & 0b111;
 }
+#elif defined CONFIG_IDF_TARGET_ESP32S3
+__FORCEINLINE void DAP_SPI_Send_Header(const uint8_t packetHeaderData, uint8_t *ack, uint8_t TrnAfterACK)
+{
+    uint32_t dataBuf;
+
+    // have data to send
+    DAP_SPI.user.usr_mosi = 0;
+    DAP_SPI.user.usr_command = 1;
+    DAP_SPI.user.usr_miso = 1;
+
+    // 8bits Header + 1 bit Trn(Before ACK) - 1(prescribed)
+    DAP_SPI.user2.usr_command_bitlen = 8U + 1U - 1U;
+    DAP_SPI.user2.usr_command_value = packetHeaderData;
+
+
+#if (USE_SPI_SIO == 1)
+    DAP_SPI.user.sio = true;
+#endif
+
+    // 3bits ACK + TrnAferACK  - 1(prescribed)
+    SET_MISO_BIT_LEN(3U + TrnAfterACK - 1U);
+
+    START_AND_WAIT_SPI_TRANSMISSION_DONE();
+
+#if (USE_SPI_SIO == 1)
+    DAP_SPI.user.sio = false;
+#endif
+
+    DAP_SPI.user.usr_command = 0;
+
+    dataBuf = DAP_SPI.data_buf[0];
+    *ack = dataBuf & 0b111;
+}
 #endif
 
 
@@ -312,6 +357,20 @@ __FORCEINLINE void DAP_SPI_Write_Data(uint32_t data, uint8_t parity)
 
     START_AND_WAIT_SPI_TRANSMISSION_DONE();
 }
+#elif defined CONFIG_IDF_TARGET_ESP32S3
+__FORCEINLINE void DAP_SPI_Write_Data(uint32_t data, uint8_t parity)
+{
+    DAP_SPI.user.usr_mosi = 1;
+    DAP_SPI.user.usr_miso = 0;
+
+    // esp32c3 can not send 33 bits of data correctly, we need to send an additional bit
+    // that will not be recognized as the start bit.
+    SET_MOSI_BIT_LEN(32U + 1U - 1U);
+    DAP_SPI.data_buf[0] = data;
+    DAP_SPI.data_buf[1] = parity == 0 ? 0b00 : 0b01;
+
+    START_AND_WAIT_SPI_TRANSMISSION_DONE();
+}
 #endif
 
 
@@ -344,9 +403,21 @@ __FORCEINLINE void DAP_SPI_Generate_Cycle(uint8_t num)
 
     START_AND_WAIT_SPI_TRANSMISSION_DONE();
 }
+#elif defined CONFIG_IDF_TARGET_ESP32S3
+__FORCEINLINE void DAP_SPI_Generate_Cycle(uint8_t num)
+{
+    //// TODO: It may take long time to generate just one clock
+    DAP_SPI.user.usr_mosi = 0;
+    DAP_SPI.user.usr_miso = 1;
+
+    // esp32c3 can not send a single bit, therefore we use read operation instead.
+    SET_MISO_BIT_LEN(num - 1U);
+
+    START_AND_WAIT_SPI_TRANSMISSION_DONE();
+}
 #endif
 
-#if defined CONFIG_IDF_TARGET_ESP32 || defined CONFIG_IDF_TARGET_ESP32C3
+#if defined CONFIG_IDF_TARGET_ESP32 || defined CONFIG_IDF_TARGET_ESP32C3  || defined CONFIG_IDF_TARGET_ESP32S3 
 /**
  * @brief Quickly generate 1 clock
  *

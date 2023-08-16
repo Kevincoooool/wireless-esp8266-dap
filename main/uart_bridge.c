@@ -66,6 +66,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     #define UART_BRIDGE_RX UART_NUM_1
     #define UART_BRIDGE_TX_PIN 19
     #define UART_BRIDGE_RX_PIN 18 // PIN18 has 50000ns glitch during the power-up
+    #elif defined CONFIG_IDF_TARGET_ESP32S3
+    #define UART_BRIDGE_TX UART_NUM_1
+    #define UART_BRIDGE_RX UART_NUM_1
+    #define UART_BRIDGE_TX_PIN 19
+    #define UART_BRIDGE_RX_PIN 18 // PIN18 has 50000ns glitch during the power-up
 #else
     #error unknown hardware
 #endif

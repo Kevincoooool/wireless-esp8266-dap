@@ -1,3 +1,12 @@
+/*
+ * @Author: Kevincoooool
+ * @Date: 2023-08-16 11:24:04
+ * @Description: 
+ * @version:  
+ * @Filename: Do not Edit
+ * @LastEditTime: 2023-08-16 14:29:26
+ * @FilePath: \wireless-esp8266-dap\main\wifi_configuration.h
+ */
 /**
  * @file wifi_configuration.h
  * @brief Fill in your wifi configuration information here.
@@ -15,7 +24,7 @@ static struct {
     const char *ssid;
     const char *password;
 } wifi_list[] __attribute__((unused)) = {
-    {.ssid = "OTA", .password = "12345678"},
+    {.ssid = "CMCC-", .password = "99999999"},
     {.ssid = "DAP", .password = "12345678"},
     // Add your WAP like this:
     // {.ssid = "your ssid", .password = "your password"},

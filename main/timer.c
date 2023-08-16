@@ -1,3 +1,12 @@
+/*
+ * @Author: Kevincoooool
+ * @Date: 2023-08-16 11:24:04
+ * @Description: 
+ * @version:  
+ * @Filename: Do not Edit
+ * @LastEditTime: 2023-08-16 11:30:56
+ * @FilePath: \wireless-esp8266-dap\main\timer.c
+ */
 /**
  * @file timer.c
  * @brief Hardware timer for DAP timestamp
@@ -55,7 +64,7 @@ uint32_t get_timer_count()
 
 #ifdef CONFIG_IDF_TARGET_ESP8266
     return (uint32_t)frc2->count.data;
-#elif defined CONFIG_IDF_TARGET_ESP32 || defined CONFIG_IDF_TARGET_ESP32C3
+#elif defined CONFIG_IDF_TARGET_ESP32 || defined CONFIG_IDF_TARGET_ESP32C3 || defined CONFIG_IDF_TARGET_ESP32S3
     return 0;
 #else
     #error unknown hardware

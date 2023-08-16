@@ -49,7 +49,7 @@
 
 
 // Debug
-#define PRINT_SWD_PROTOCOL 0
+#define PRINT_SWD_PROTOCOL 1
 
 // SW Macros
 
@@ -308,6 +308,8 @@ static uint8_t SWD_Transfer_SPI (uint32_t request, uint32_t *data) {
       DAP_SPI_Generate_Cycle(1);
 #elif defined CONFIG_IDF_TARGET_ESP32C3
       DAP_SPI_Fast_Cycle();
+      #elif defined CONFIG_IDF_TARGET_ESP32S3
+      DAP_SPI_Fast_Cycle();
 #endif
 
 #if (PRINT_SWD_PROTOCOL == 1)
@@ -518,16 +520,16 @@ static uint8_t SWD_Transfer_GPIO (uint32_t request, uint32_t *data, uint8_t need
 //   data:    DATA[31:0]
 //   return:  ACK[2:0]
 uint8_t  SWD_Transfer(uint32_t request, uint32_t *data) {
-  switch (SWD_TransferSpeed) {
-    case kTransfer_SPI:
-      return SWD_Transfer_SPI(request, data);
-    case kTransfer_GPIO_fast:
+//   switch (SWD_TransferSpeed) {
+//     case kTransfer_SPI:
+//       return SWD_Transfer_SPI(request, data);
+//     case kTransfer_GPIO_fast:
       return SWD_Transfer_GPIO(request, data, 0);
-    case kTransfer_GPIO_normal:
-      return SWD_Transfer_GPIO(request, data, 1);
-    default:
-      return SWD_Transfer_GPIO(request, data, 1);
-  }
+    // case kTransfer_GPIO_normal:
+    //   return SWD_Transfer_GPIO(request, data, 1);
+    // default:
+    //   return SWD_Transfer_GPIO(request, data, 1);
+//   }
 }
 
 

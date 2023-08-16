@@ -321,6 +321,15 @@ __STATIC_FORCEINLINE void PIN_DELAY_SLOW(int32_t delay)
       "BNEZ   %[time], l_PINDELAYSLOW%=;"
       : [time] "+r"(delay));
 }
+  #elif defined CONFIG_IDF_TARGET_ESP32S3
+__STATIC_FORCEINLINE void PIN_DELAY_SLOW(int32_t delay)
+{
+  __asm__ volatile(
+      "l_PINDELAYSLOW%=:"
+      "ADDI %[time], %[time], -1;"
+      "BNEZ   %[time], l_PINDELAYSLOW%=;"
+      : [time] "+r"(delay));
+}
   #endif
 
 #endif

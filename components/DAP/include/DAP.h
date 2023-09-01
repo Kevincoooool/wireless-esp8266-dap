@@ -324,11 +324,15 @@ __STATIC_FORCEINLINE void PIN_DELAY_SLOW(int32_t delay)
   #elif defined CONFIG_IDF_TARGET_ESP32S3
 __STATIC_FORCEINLINE void PIN_DELAY_SLOW(int32_t delay)
 {
-  __asm__ volatile(
-      "l_PINDELAYSLOW%=:"
-      "ADDI %[time], %[time], -1;"
-      "BNEZ   %[time], l_PINDELAYSLOW%=;"
-      : [time] "+r"(delay));
+//   __asm__ volatile(
+//       "l_PINDELAYSLOW%=:"
+//       "ADDI %[time], %[time], -1;"
+//       "BNEZ   %[time], l_PINDELAYSLOW%=;"
+//       : [time] "+r"(delay));
+  uint32_t count;
+  // ESP_LOGI("SWD_DELAY","PIN_DELAY_SLOW");
+  count = delay;
+  while (--count);
 }
   #endif
 
@@ -340,13 +344,13 @@ __STATIC_FORCEINLINE void PIN_DELAY_SLOW(int32_t delay)
 #endif
 __STATIC_FORCEINLINE void PIN_DELAY_FAST (void) {
 #if (DELAY_FAST_CYCLES >= 1U)
-  __NOP();
+  __nop();
 #endif
 #if (DELAY_FAST_CYCLES >= 2U)
-  __NOP();
+  __nop();
 #endif
 #if (DELAY_FAST_CYCLES >= 3U)
-  __NOP();
+  __nop();
 #endif
 }
 

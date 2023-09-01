@@ -122,11 +122,15 @@ __STATIC_INLINE __UNUSED void GPIO_SET_LEVEL_LOW(int io_num)
 #elif  CONFIG_IDF_TARGET_ESP32S3
 __STATIC_INLINE __UNUSED void GPIO_SET_LEVEL_HIGH(int io_num)
 {
-  gpio_set_level(io_num, 1);
+//   gpio_set_level(io_num, 1);
+    gpio_ll_set_level(&GPIO, io_num, 1);
+
 }
 __STATIC_INLINE __UNUSED void GPIO_SET_LEVEL_LOW(int io_num)
 {
-  gpio_set_level(io_num, 0);
+      gpio_ll_set_level(&GPIO, io_num, 0);
+
+//   gpio_set_level(io_num, 0);
 }
 #endif
 
@@ -144,8 +148,8 @@ __STATIC_INLINE __UNUSED int GPIO_GET_LEVEL(int io_num)
 #elif defined CONFIG_IDF_TARGET_ESP32S3
 __STATIC_INLINE __UNUSED int GPIO_GET_LEVEL(int io_num)
 {
-//   return gpio_ll_get_level(&GPIO, io_num);
-   return gpio_get_level(io_num);
+  return gpio_ll_get_level(&GPIO, io_num);
+//    return gpio_get_level(io_num);
 }
 #endif
 

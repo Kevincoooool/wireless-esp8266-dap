@@ -121,7 +121,7 @@ This information includes:
 
 /// Configure maximum number of JTAG devices on the scan chain connected to the Debug Access Port.
 /// This setting impacts the RAM requirements of the Debug Unit. Valid range is 1 .. 255.
-#define DAP_JTAG_DEV_CNT 8U ///< Maximum number of JTAG devices on scan chain.
+#define DAP_JTAG_DEV_CNT 64U ///< Maximum number of JTAG devices on scan chain.
 
 /// Default communication mode on the Debug Access Port.
 /// Used for the command \ref DAP_Connect when Port Default mode is selected.
@@ -137,7 +137,7 @@ This information includes:
 /// This configuration settings is used to optimize the communication performance with the
 /// debugger and depends on the USB peripheral. For devices with limited RAM or USB buffer the
 /// setting can be reduced (valid range is 1 .. 255).
-#define DAP_PACKET_COUNT 255 ///< Specifies number of packets buffered.
+#define DAP_PACKET_COUNT 8 ///< Specifies number of packets buffered.
 
 /// Indicates that the SWO function(UART SWO & Streaming Trace) is available
 #define SWO_FUNCTION_ENABLE 0 ///< SWO function:  1 = available, 0 = not available.
@@ -225,8 +225,8 @@ __STATIC_INLINE uint8_t DAP_GetProductString(char *str)
  */
 __STATIC_INLINE uint8_t DAP_GetSerNumString(char *str)
 {
-    strcpy(str, "996996");
-    return (sizeof("996996"));
+    strcpy(str, "Wireless DAP 996");
+    return (sizeof("Wireless DAP 996"));
 }
 
 ///@}
@@ -268,8 +268,8 @@ __STATIC_INLINE uint8_t DAP_GetSerNumString(char *str)
 #define PIN_LED_RUNNING _   // won't be used
 #elif defined CONFIG_IDF_TARGET_ESP32S3
 #define PIN_SWDIO _       // SPI MISO
-#define PIN_SWDIO_MOSI 17 // SPI MOSI
-#define PIN_SWCLK 18
+#define PIN_SWDIO_MOSI 4 // SPI MOSI
+#define PIN_SWCLK 5
 #define PIN_TDO 8 // device TDO -> Host Data Input
 #define PIN_TDI 9
 #define PIN_nTRST 6 // optional

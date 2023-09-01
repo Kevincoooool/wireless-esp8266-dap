@@ -60,27 +60,40 @@
 
 // Space for time in the original version,
 // and time for space in our implementation
+/*
+// #define SW_CLOCK_CYCLE()                \
+//   PIN_SWCLK_CLR();                      \
+//   if (need_delay) { PIN_DELAY(); }      \
+//   PIN_SWCLK_SET();                      \
+//   if (need_delay) { PIN_DELAY(); }
 
-#define SW_CLOCK_CYCLE()                \
-  PIN_SWCLK_CLR();                      \
-  if (need_delay) { PIN_DELAY(); }      \
-  PIN_SWCLK_SET();                      \
-  if (need_delay) { PIN_DELAY(); }
+// #define SW_WRITE_BIT(bit)               \
+//   PIN_SWDIO_OUT(bit);                   \
+//   PIN_SWCLK_CLR();                      \
+//   if (need_delay) { PIN_DELAY(); }      \
+//   PIN_SWCLK_SET();                      \
+//   if (need_delay) { PIN_DELAY(); }
 
-#define SW_WRITE_BIT(bit)               \
-  PIN_SWDIO_OUT(bit);                   \
-  PIN_SWCLK_CLR();                      \
-  if (need_delay) { PIN_DELAY(); }      \
-  PIN_SWCLK_SET();                      \
-  if (need_delay) { PIN_DELAY(); }
+// #define SW_READ_BIT(bit)                \
+//   PIN_SWCLK_CLR();                      \
+//   if (need_delay) { PIN_DELAY(); }      \
+//   bit = PIN_SWDIO_IN();                 \
+//   PIN_SWCLK_SET();                      \
+//   if (need_delay) { PIN_DELAY(); }
+*/
+#define SW_CLOCK_CYCLE() \
+	PIN_SWCLK_CLR();     \
+	PIN_SWCLK_SET();
 
-#define SW_READ_BIT(bit)                \
-  PIN_SWCLK_CLR();                      \
-  if (need_delay) { PIN_DELAY(); }      \
-  bit = PIN_SWDIO_IN();                 \
-  PIN_SWCLK_SET();                      \
-  if (need_delay) { PIN_DELAY(); }
+#define SW_WRITE_BIT(bit) \
+	PIN_SWDIO_OUT(bit);   \
+	PIN_SWCLK_CLR();      \
+	PIN_SWCLK_SET();
 
+#define SW_READ_BIT(bit)  \
+	PIN_SWCLK_CLR();      \
+	bit = PIN_SWDIO_IN(); \
+	PIN_SWCLK_SET();
 
 
 uint8_t SWD_TransferSpeed = kTransfer_GPIO_normal;
@@ -525,10 +538,10 @@ uint8_t  SWD_Transfer(uint32_t request, uint32_t *data) {
 //       return SWD_Transfer_SPI(request, data);
 //     case kTransfer_GPIO_fast:
       return SWD_Transfer_GPIO(request, data, 0);
-    // case kTransfer_GPIO_normal:
-    //   return SWD_Transfer_GPIO(request, data, 1);
-    // default:
-    //   return SWD_Transfer_GPIO(request, data, 1);
+//     case kTransfer_GPIO_normal:
+//       return SWD_Transfer_GPIO(request, data, 1);
+//     default:
+//       return SWD_Transfer_GPIO(request, data, 1);
 //   }
 }
 
